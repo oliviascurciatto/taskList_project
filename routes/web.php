@@ -83,7 +83,7 @@ Route::get('/tasks/{id}', function($id) use($tasks){
         abort(Response::HTTP_NOT_FOUND);
     }
 
-    return view('show', ['task' => $task]);
+    return view('show', ['task' => $task]); 
 })->name('tasks.show');
 
 
