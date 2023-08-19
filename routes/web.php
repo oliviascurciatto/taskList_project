@@ -1,7 +1,7 @@
 <?php
 
 use App\Models\Task;
-use GuzzleHttp\Psr7\Request;
+use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Route;
 
@@ -89,6 +89,8 @@ Query builder -> lista as tarefas completas
 Route::get('/tasks', function () use($tasks) {
 return view('index', ['tasks' => \App\Models\Task::latest()->where('completed', true)->get()]);
 })->name('tasks.index');*/
+
+
 Route::post('/tasks', function (Request $request) {
  $data = $request->validate([
   'title' => 'required|max:255',
