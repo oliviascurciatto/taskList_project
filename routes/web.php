@@ -1,6 +1,8 @@
 <?php
 
+use App\Http\Requests\TaskRequest;
 use App\Models\Task;
+use GuzzleHttp\Promise\Create;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Route;
@@ -91,38 +93,34 @@ return view('index', ['tasks' => \App\Models\Task::latest()->where('completed', 
 })->name('tasks.index');*/
 
 
-Route::post('/tasks', function (Request $request) {
- $data = $request->validate([
-  'title' => 'required|max:255',
-  'description' => 'required',
-  'long_description' => 'required',
-]);
-  
-$task = new Task;
-$task->title = $data['title'];
-$task->description = $data['description'];
-$task->long_descrition = $data['long_description'];
+Route::post('/tasks', function (TaskRequest $request) {
 
-$task->save();
+// $data = $request->validated(); 
+// $task = new Task;
+// $task->title = $data['title'];
+// $task->description = $data['description'];
+// $task->long_descrition = $data['long_description'];
 
-return redirect()->route('tasks.show', ['id' => $task->id])->with('success', 'Task created successfuly!');
+// $task->save();
+$task = Task::create($request->validated());
+
+
+
+return redirect()->route('tasks.show', ['task' => $task->id])->with('success', 'Task created successfuly!');
 })->name('tasks.store');
 
-Route::put('/tasks/{id}', function ($id, Request $request) {
-    $data = $request->validate([
-     'title' => 'required|max:255',
-     'description' => 'required',
-     'long_description' => 'required',
-   ]);
-     
-   $task = Task::findOrFail($id);
-   $task->title = $data['title'];
-   $task->description = $data['description'];
-   $task->long_descrition = $data['long_description'];
+Route::put('/tasks/{task}', function (Task $task, TaskRequest $request) {
+
+   //$data = $request->validated();
+//    $task->title = $data['title'];
+//    $task->description = $data['description'];
+//    $task->long_descrition = $data['long_description'];
    
-   $task->save();
+//    $task->save();
+
+$task->update($request->validated());
    
-   return redirect()->route('tasks.show', ['id' => $task->id])->with('success', 'Task updated successfuly!');
+   return redirect()->route('tasks.show', ['task' => $task->id])->with('success', 'Task updated successfuly!');
    })->name('tasks.update');
 
 Route::get('/tasks', function () {
@@ -137,15 +135,15 @@ Route::view('tasks/create', 'create')->name('tasks.create');
 //     ]);
 // })->name('tasks.show');
 
-Route::get('/tasks/{id}/edit', function ($id) {
+Route::get('/tasks/{task}/edit', function (Task $task) {
     return view('edit', [
-        'task' => Task::findOrFail($id)
+        'task' => $task
     ]);
 })->name('tasks.edit');
 
-Route::get('/tasks/{id}', function ($id) {
+Route::get('/tasks/{task}', function (Task $task) {
     return view('show', [
-        'task' => Task::findOrFail($id)
+        'task' => $task
     ]);
 })->name('tasks.show');
 

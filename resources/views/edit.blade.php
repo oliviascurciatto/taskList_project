@@ -11,7 +11,7 @@
 </style>
 
 @section('content')
- <form method="POST" action="{{ route('tasks.update', ['id' => $task->id]) }}"></form>
+ <form method="POST" action="{{ route('tasks.update', ['task' => $task->id]) }}">
  @csrf {{--  protege o site de ataques maliciosos, deve ser incluido em todos os formulários  --}}
  @method('PUT')
  <div>
