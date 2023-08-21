@@ -7,16 +7,6 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Route;
 
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "web" middleware group. Make something great!
-|
-*/
 
 
 // class Task
@@ -76,70 +66,52 @@ Route::get('/', function(){
     return redirect()->route('tasks.index');
 });
 
-/*
-Lista todos os dados da tabela
-
-Route::get('/tasks', function () use($tasks) {
-return view('index', ['tasks' => \App\Models\Task::all()]);
-})->name('tasks.index');
-
-*/
-
-/*
-Query builder -> lista as tarefas completas
-
-Route::get('/tasks', function () use($tasks) {
-return view('index', ['tasks' => \App\Models\Task::latest()->where('completed', true)->get()]);
-})->name('tasks.index');*/
 
 
 Route::post('/tasks', function (TaskRequest $request) {
-
-// $data = $request->validated(); 
-// $task = new Task;
-// $task->title = $data['title'];
-// $task->description = $data['description'];
-// $task->long_descrition = $data['long_description'];
-
-// $task->save();
-$task = Task::create($request->validated());
-
-return redirect()->route('tasks.show', ['task' => $task->id])->with('success', 'Task created successfuly!');
+    
+    // $data = $request->validated(); 
+    // $task = new Task;
+    // $task->title = $data['title'];
+    // $task->description = $data['description'];
+    // $task->long_descrition = $data['long_description'];
+    
+    // $task->save();
+    $task = Task::create($request->validated());
+    
+    return redirect()->route('tasks.show', ['task' => $task->id])->with('success', 'Task created successfuly!');
 })->name('tasks.store');
 
 Route::put('/tasks/{task}', function (Task $task, TaskRequest $request) {
-
+    
    //$data = $request->validated();
 //    $task->title = $data['title'];
 //    $task->description = $data['description'];
 //    $task->long_descrition = $data['long_description'];
-   
+
 //    $task->save();
 
 $task->update($request->validated());
-   
-   return redirect()->route('tasks.show', ['task' => $task->id])->with('success', 'Task updated successfuly!');
-   })->name('tasks.update');
+
+return redirect()->route('tasks.show', ['task' => $task->id])->with('success', 'Task updated successfuly!');
+})->name('tasks.update');
 
 
 Route::delete('/tasks/{task}', function (Task $task) {
     $task->delete();
-
+    
     return redirect()->route('tasks.index')
     ->with('success', 'Task deleted successfully!');
 })->name('tasks.destroy');
 
 Route::get('/tasks', function () {
-return view('index', ['tasks' => Task::latest()->get()]);
+    return view('index', [
+        'tasks' => Task::latest()->paginate(10)
+    ]);
 })->name('tasks.index');
 
 Route::view('tasks/create', 'create')->name('tasks.create');
 
-// Route::get('/tasks/{task}', function (Task $task) {
-//     return view('show', [
-//         'task' => $task
-//     ]);
-// })->name('tasks.show');
 
 Route::get('/tasks/{task}/edit', function (Task $task) {
     return view('edit', [
@@ -154,19 +126,51 @@ Route::get('/tasks/{task}', function (Task $task) {
 })->name('tasks.show');
 
 
+Route::put('tasks/{task}/toggle-complete', function(Task $task){
+    $task->toggleComplete();
 
-// Route::get('/xxx', function () {
-//     return 'Hello';
-// })->name('hello');
+    return redirect()->back()->with('success', 'Task updated successfully');
 
-// Route::get('/hallo', function () {
-//     return redirect()->route('hello');
-// });
+})->name('tasks.toggle-complete');
 
-// Route::get('/greet/{name}', function ($name) {
-//     return 'Hello ' . $name . '!';
-// });
+
+
 
 Route::fallback(function () {
     return 'Still got somewhere!';
 });
+
+
+// Route::get('/tasks/{task}', function (Task $task) {
+    //     return view('show', [
+        //         'task' => $task
+        //     ]);
+        // })->name('tasks.show');
+        
+        
+        // Route::get('/xxx', function () {
+            //     return 'Hello';
+// })->name('hello');
+
+// Route::get('/hallo', function () {
+    //     return redirect()->route('hello');
+    // });
+    
+    // Route::get('/greet/{name}', function ($name) {
+        //     return 'Hello ' . $name . '!';
+        // });
+        /*
+        Lista todos os dados da tabela
+        
+        Route::get('/tasks', function () use($tasks) {
+        return view('index', ['tasks' => \App\Models\Task::all()]);
+        })->name('tasks.index');
+        
+        */
+        
+        /*
+        Query builder -> lista as tarefas completas
+        
+        Route::get('/tasks', function () use($tasks) {
+        return view('index', ['tasks' => \App\Models\Task::latest()->where('completed', true)->get()]);
+        })->name('tasks.index');*/
